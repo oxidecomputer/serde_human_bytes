@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 struct MyStruct {
-    #[serde(with = "serde_human_bytes::hex")]
+    #[serde(with = "serde_human_bytes::hex_array")]
     x: [u8; 16],
 }
 

@@ -45,4 +45,6 @@ jobs:
       - name: Build
         run: cargo build --all-features
       - name: Test
+        # ciborium doesn't work against Rust 1.51
+        if: matrix.rust-version == 'stable'
         run: cargo test --all-features

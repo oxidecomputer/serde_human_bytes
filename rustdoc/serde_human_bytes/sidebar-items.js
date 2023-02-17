@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["hex_array","Serialize a byte array as a list of bytes if human-readable, or as hex if not."]]};

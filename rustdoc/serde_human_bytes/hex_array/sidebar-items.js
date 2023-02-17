@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["deserialize","Deserializes hex strings (if human-readable) or byte arrays (if not) to `[u8; N]`."],["serialize","Implements serialization for byte arrays to a hex string if human-readable, or as bytes if not."],["serialize_upper","Similar to [`serialize`], except to upper-case."]]};

@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["hex","proc_macro2","quote","serde","serde_derive","serde_human_bytes","syn","unicode_ident"];

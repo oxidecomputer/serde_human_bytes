@@ -49,7 +49,7 @@ where
             type Value = [u8; N];
 
             fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                write!(f, "a hex encoded string {N} bytes long")
+                write!(f, "a hex-encoded string {} bytes long", N)
             }
 
             fn visit_str<E>(self, data: &str) -> Result<Self::Value, E>
@@ -79,7 +79,7 @@ where
             type Value = [u8; N];
 
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-                write!(formatter, "[u8; {N}]")
+                write!(formatter, "a byte array [u8; {}]", N)
             }
 
             fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>

@@ -9,4 +9,4 @@
 //! For example, serialize as hex if serializing to JSON, or as an efficient
 //! byte sequence with CBOR.
 
-pub mod hex;
+pub mod hex_array;

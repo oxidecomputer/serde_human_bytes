@@ -3,9 +3,12 @@
 
 //! Serialize a byte array as a list of bytes if human-readable, or as hex if not.
 
-use std::{convert::TryInto, fmt};
+use core::{convert::TryInto, fmt};
 
-use serde::{de::Visitor, Deserializer, Serializer};
+use serde::{
+    de::{Expected, Visitor},
+    Deserializer, Serializer,
+};
 
 /// Implements serialization for byte arrays to a hex string if human-readable, or as bytes if not.
 ///
@@ -78,7 +81,7 @@ where
         impl<'de2, const N: usize> Visitor<'de2> for BytesVisitor<N> {
             type Value = [u8; N];
 
-            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
                 write!(formatter, "a byte array [u8; {}]", N)
             }
 
@@ -86,13 +89,19 @@ where
             where
                 E: Error,
             {
-                v.try_into().map_err(|_| {
-                    let expected = format!("[u8; {}]", N);
-                    E::invalid_length(v.len(), &expected.as_str())
-                })
+                v.try_into()
+                    .map_err(|_| E::invalid_length(v.len(), &HexExpected::<N>))
             }
         }
 
         deserializer.deserialize_bytes(BytesVisitor)
+    }
+}
+
+struct HexExpected<const N: usize>;
+
+impl<const N: usize> Expected for HexExpected<N> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "a byte array [u8; {}]", N)
     }
 }

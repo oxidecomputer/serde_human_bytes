@@ -7,6 +7,8 @@ repository = "https://github.com/oxidecomputer/serde_human_bytes"
 documentation = "https://docs.rs/serde_human_bytes"
 edition = "2018"
 rust-version = "1.51"
+keywords = ["serde", "serialization", "no_std", "bytes", "hex"]
+categories = ["encoding", "no-std"]
 
 [dependencies]
 hex = { version = "0.4", features = ["serde"] }

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 #![warn(missing_docs)]
+#![no_std]
 
 //! Serialize `[u8; N]` as bytes or as human-readable strings, depending on the
 //! format.

@@ -1,0 +1,19 @@
+[package]
+name = "serde_human_bytes"
+description = "Serialize [u8; N] as bytes or as human-readable strings, depending on the format."
+version = "0.1.0"
+license = "Apache-2.0"
+repository = "https://github.com/oxidecomputer/serde_human_bytes"
+documentation = "https://docs.rs/serde_human_bytes"
+edition = "2018"
+rust-version = "1.51"
+
+[dependencies]
+hex = { version = "0.4", features = ["serde"] }
+serde = { version = "1", default-features = false }
+
+[dev-dependencies]
+hex-literal = "0.2"
+serde = { version = "1", default-features = false, features = ["derive"] }
+serde_json = "1"
+ciborium = "0.2"

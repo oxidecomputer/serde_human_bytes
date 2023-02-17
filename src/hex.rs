@@ -1,0 +1,98 @@
+// Copyright (c) The serde_human_bytes Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+//! Serialize a byte array as a list of bytes if human-readable, or as hex if not.
+
+use std::{convert::TryInto, fmt};
+
+use serde::{de::Visitor, Deserializer, Serializer};
+
+/// Implements serialization for byte arrays to a hex string if human-readable, or as bytes if not.
+///
+/// This should work transparently with any `[u8; N].
+pub fn serialize<S>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    if serializer.is_human_readable() {
+        hex::serde::serialize(bytes, serializer)
+    } else {
+        serializer.serialize_bytes(bytes)
+    }
+}
+
+/// Similar to [`serialize`], except to upper-case.
+pub fn serialize_upper<S>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    if serializer.is_human_readable() {
+        hex::serde::serialize_upper(bytes, serializer)
+    } else {
+        serializer.serialize_bytes(bytes)
+    }
+}
+
+/// Deserializes hex strings (if human-readable) or byte arrays (if not) to `[u8; N]`.
+pub fn deserialize<'de, D, const N: usize>(deserializer: D) -> Result<[u8; N], D::Error>
+where
+    D: Deserializer<'de>,
+{
+    use serde::de::Error;
+
+    if deserializer.is_human_readable() {
+        // Bleh, hex::FromHex doesn't have an implementation for const-generic N sadly. Do our own
+        // thing.
+        struct HexVisitor<const N: usize>;
+
+        impl<'de2, const N: usize> Visitor<'de2> for HexVisitor<N> {
+            type Value = [u8; N];
+
+            fn expecting(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                write!(f, "a hex encoded string {N} bytes long")
+            }
+
+            fn visit_str<E>(self, data: &str) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                let mut out = [0u8; N];
+                hex::decode_to_slice(data, &mut out).map_err(Error::custom)?;
+                Ok(out)
+            }
+
+            fn visit_borrowed_str<E>(self, data: &'de2 str) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                let mut out = [0u8; N];
+                hex::decode_to_slice(data, &mut out).map_err(Error::custom)?;
+                Ok(out)
+            }
+        }
+
+        deserializer.deserialize_str(HexVisitor)
+    } else {
+        struct BytesVisitor<const N: usize>;
+
+        impl<'de2, const N: usize> Visitor<'de2> for BytesVisitor<N> {
+            type Value = [u8; N];
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                write!(formatter, "[u8; {N}]")
+            }
+
+            fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
+            where
+                E: Error,
+            {
+                v.try_into().map_err(|_| {
+                    let expected = format!("[u8; {}]", N);
+                    E::invalid_length(v.len(), &expected.as_str())
+                })
+            }
+        }
+
+        deserializer.deserialize_bytes(BytesVisitor)
+    }
+}

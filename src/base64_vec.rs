@@ -3,13 +3,11 @@
 
 //! Serialize a byte vector as base64 if human-readable, or as bytes if not.
 
-extern crate alloc;
-
 use alloc::vec::Vec;
 use core::fmt;
 
 use base64::Engine;
-use serde::{Deserializer, Serializer, de::Visitor};
+use serde_core::{Deserializer, Serializer, de::Visitor};
 
 /// Implements serialization for byte vectors to a base64 string if
 /// human-readable, or as bytes if not.
@@ -31,7 +29,7 @@ pub fn deserialize<'de, D>(deserializer: D) -> Result<Vec<u8>, D::Error>
 where
     D: Deserializer<'de>,
 {
-    use serde::de::Error;
+    use serde_core::de::Error;
 
     if deserializer.is_human_readable() {
         struct Base64Visitor;
@@ -45,7 +43,7 @@ where
 
             fn visit_str<E>(self, data: &str) -> Result<Self::Value, E>
             where
-                E: serde::de::Error,
+                E: Error,
             {
                 base64::engine::general_purpose::STANDARD
                     .decode(data)
@@ -54,7 +52,7 @@ where
 
             fn visit_borrowed_str<E>(self, data: &'de2 str) -> Result<Self::Value, E>
             where
-                E: serde::de::Error,
+                E: Error,
             {
                 base64::engine::general_purpose::STANDARD
                     .decode(data)

@@ -6,8 +6,8 @@
 use core::{convert::TryInto, fmt};
 
 use serde::{
-    de::{Expected, Visitor},
     Deserializer, Serializer,
+    de::{Expected, Visitor},
 };
 
 /// Implements serialization for byte arrays to a hex string if human-readable, or as bytes if not.

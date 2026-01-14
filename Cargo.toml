@@ -5,12 +5,17 @@ version = "0.1.0"
 license = "Apache-2.0"
 repository = "https://github.com/oxidecomputer/serde_human_bytes"
 documentation = "https://docs.rs/serde_human_bytes"
-edition = "2018"
-rust-version = "1.51"
+edition = "2024"
+rust-version = "1.85"
 keywords = ["serde", "serialization", "no_std", "bytes", "hex"]
 categories = ["encoding", "no-std"]
 
+[features]
+default = ["alloc"]
+alloc = ["dep:base64"]
+
 [dependencies]
+base64 = { version = "0.22", optional = true }
 hex = { version = "0.4", features = ["serde"] }
 serde = { version = "1", default-features = false }
 

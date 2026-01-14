@@ -2,11 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use hex_literal::hex;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Deserialize)]
+#[cfg_attr(feature = "alloc", derive(serde::Serialize))]
 struct MyStruct {
-    #[serde(with = "serde_human_bytes::hex_array")]
+    #[serde(deserialize_with = "serde_human_bytes::hex_array::deserialize")]
+    #[cfg_attr(
+        feature = "alloc",
+        serde(serialize_with = "serde_human_bytes::hex_array::serialize")
+    )]
     x: [u8; 16],
 }
 
@@ -17,6 +22,7 @@ static FIXTURE: MyStruct = MyStruct {
 static AS_JSON: &str = r#"{"x":"0123456789abcdef0123456789abcdef"}"#;
 static AS_CBOR: [u8; 20] = hex!("a16178500123456789abcdef0123456789abcdef");
 
+#[cfg(feature = "alloc")]
 #[test]
 fn hex_serialize() {
     assert_eq!(

@@ -4,7 +4,6 @@
 //! Serialize a byte array as a list of bytes if human-readable, or as hex if not.
 
 use core::{convert::TryInto, fmt};
-
 use serde_core::{
     Deserializer,
     de::{Expected, Visitor},

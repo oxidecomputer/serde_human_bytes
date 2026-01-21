@@ -4,3 +4,5 @@
 #[cfg(feature = "alloc")]
 mod base64;
 mod hex;
+#[cfg(feature = "schemars08")]
+mod schemars;

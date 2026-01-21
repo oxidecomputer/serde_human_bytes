@@ -4,9 +4,8 @@
 //! Serialize a byte vector as base64 if human-readable, or as bytes if not.
 
 use alloc::vec::Vec;
-use core::fmt;
-
 use base64::Engine;
+use core::fmt;
 use serde_core::{Deserializer, Serializer, de::Visitor};
 
 /// Implements serialization for byte vectors to a base64 string if

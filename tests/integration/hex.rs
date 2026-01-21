@@ -15,6 +15,21 @@ struct MyStruct {
     x: [u8; 16],
 }
 
+/// Test that `HexArray` works with `#[serde(with = "...")]`.
+#[cfg(feature = "alloc")]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, serde::Deserialize, serde::Serialize)]
+struct WithHexArrayAttr {
+    #[serde(with = "serde_human_bytes::HexArray::<16>")]
+    x: [u8; 16],
+}
+
+/// Test using `HexArray` directly as a field type.
+#[cfg(feature = "alloc")]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, serde::Deserialize, serde::Serialize)]
+struct WithHexArrayDirect {
+    x: serde_human_bytes::HexArray<16>,
+}
+
 static FIXTURE: MyStruct = MyStruct {
     x: hex!("0123456789abcdef0123456789abcdef"),
 };
@@ -45,4 +60,32 @@ fn hex_deserialize() {
     let cbor_actual: MyStruct =
         ciborium::de::from_reader(&AS_CBOR[..]).expect("deserializing from CBOR succeeded");
     assert_eq!(FIXTURE, cbor_actual, "deserializing from CBOR succeeded");
+}
+
+#[cfg(feature = "alloc")]
+#[test]
+fn hex_array_with_attr() {
+    let fixture = WithHexArrayAttr {
+        x: hex!("0123456789abcdef0123456789abcdef"),
+    };
+
+    let json = serde_json::to_string(&fixture).expect("serialized");
+    assert_eq!(json, AS_JSON);
+
+    let roundtrip: WithHexArrayAttr = serde_json::from_str(&json).expect("deserialized");
+    assert_eq!(fixture, roundtrip);
+}
+
+#[cfg(feature = "alloc")]
+#[test]
+fn hex_array_direct() {
+    let fixture = WithHexArrayDirect {
+        x: serde_human_bytes::HexArray::new(hex!("0123456789abcdef0123456789abcdef")),
+    };
+
+    let json = serde_json::to_string(&fixture).expect("serialized");
+    assert_eq!(json, AS_JSON);
+
+    let roundtrip: WithHexArrayDirect = serde_json::from_str(&json).expect("deserialized");
+    assert_eq!(fixture, roundtrip);
 }

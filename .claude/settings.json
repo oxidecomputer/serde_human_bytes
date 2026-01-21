@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cargo hack:*)"
+      "Bash(cargo check:*)",
+      "Bash(cargo hack:*)",
+      "Bash(cargo test:*)",
+      "WebFetch(domain:spec.openapis.org)",
+      "WebSearch"
     ]
   }
 }
